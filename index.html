@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SenseBin – SenseTech</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f0f4f8;
+      --surface: #ffffff;
+      --ink: #0a1628;
+      --ink-muted: #4a6080;
+      --green: #1565C0;
+      --green-light: #1E88E5;
+      --green-pale: #E3F0FC;
+      --blue: #0a1628;
+      --blue-light: #1565C0;
+      --accent: #1976D2;
+      --border: #d0dce8;
+      --radius: 16px;
+      --radius-sm: 8px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 6%;
+      background: rgba(240,244,248,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: box-shadow .3s;
+    }
+    nav.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,.07); }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--blue);
+      letter-spacing: -0.5px;
+    }
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--ink-muted);
+      font-size: .9rem;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--green); }
+
+    .nav-cta {
+      background: var(--blue);
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 999px;
+      font-size: .88rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background .2s, transform .2s;
+    }
+    .nav-cta:hover { background: var(--blue-light); transform: translateY(-1px); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 6% 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 60% at 70% 50%, rgba(25,118,210,.10) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 50% at 20% 80%, rgba(10,22,40,.08) 0%, transparent 70%);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      position: relative;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--green-pale);
+      border: 1px solid rgba(21,101,192,.2);
+      color: var(--green);
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp .6s .2s forwards;
+    }
+    .hero-tag::before {
+      content: '';
+      width: 7px; height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      color: var(--ink);
+      opacity: 0;
+      animation: fadeUp .6s .35s forwards;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--green);
+    }
+
+    .hero-desc {
+      margin-top: 20px;
+      font-size: 1.05rem;
+      color: var(--ink-muted);
+      max-width: 440px;
+      opacity: 0;
+      animation: fadeUp .6s .5s forwards;
+    }
+
+    .hero-actions {
+      margin-top: 36px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      opacity: 0;
+      animation: fadeUp .6s .65s forwards;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: #fff;
+      padding: 14px 30px;
+      border-radius: 999px;
+      font-size: .95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background .2s, transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 20px rgba(21,101,192,.3);
+    }
+    .btn-primary:hover {
+      background: var(--green-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(21,101,192,.35);
+    }
+
+    .btn-ghost {
+      color: var(--ink);
+      font-size: .95rem;
+      font-weight: 500;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color .2s;
+    }
+    .btn-ghost:hover { color: var(--green); }
+    .btn-ghost svg { transition: transform .2s; }
+    .btn-ghost:hover svg { transform: translateX(4px); }
+
+    /* SENSOR ILLUSTRATION */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      animation: fadeIn .8s .5s forwards;
+    }
+
+    .sensor-card {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 36px 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.09);
+      width: 300px;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    .sensor-card-label {
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-bottom: 20px;
+    }
+
+    .bin-wrapper {
+      display: flex;
+      justify-content: center;
+      margin: 10px 0 24px;
+    }
+
+    .bin-svg { width: 120px; }
+
+    .fill-bar-wrap {
+      background: var(--green-pale);
+      border-radius: 8px;
+      height: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .fill-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--accent));
+      border-radius: 8px;
+      width: 0%;
+      animation: fillAnim 3s 1.2s forwards ease-in-out;
+    }
+
+    .fill-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: .78rem;
+      color: var(--ink-muted);
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+    .fill-percent {
+      font-weight: 700;
+      color: var(--green);
+      font-size: .9rem;
+    }
+
+    .alert-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: .82rem;
+      font-weight: 600;
+      color: #7a5a00;
+      opacity: 0;
+      animation: fadeIn .4s 4.2s forwards;
+    }
+    .alert-dot { width: 10px; height: 10px; background: #f59e0b; border-radius: 50%; flex-shrink: 0; animation: pulse 1.5s infinite; }
+
+    .sensor-dot {
+      position: absolute;
+      top: -10px; right: -10px;
+      width: 22px; height: 22px;
+      background: var(--accent);
+      border-radius: 50%;
+      border: 3px solid var(--bg);
+      animation: pulse 2s infinite;
+    }
+
+    /* SECTION COMMON */
+    section { padding: 100px 6%; }
+    .section-inner { max-width: 1200px; margin: 0 auto; }
+    .section-tag {
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.15;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 1rem;
+      color: var(--ink-muted);
+      max-width: 520px;
+      margin-bottom: 60px;
+    }
+
+    /* HOW IT WORKS */
+    #como-funciona { background: var(--surface); }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 32px;
+    }
+
+    .step {
+      position: relative;
+      padding: 32px;
+      border-radius: var(--radius);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      transition: transform .3s, box-shadow .3s;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .step.visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity .5s ease, transform .5s ease, box-shadow .3s, border-color .3s;
+    }
+    .step:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,.08); }
+
+    .step-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--green-pale);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .step-icon {
+      width: 44px; height: 44px;
+      background: var(--green-pale);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 1.3rem;
+    }
+    .step h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .step p { font-size: .88rem; color: var(--ink-muted); line-height: 1.6; }
+
+    /* BENEFITS */
+    #beneficios { background: var(--blue); }
+    #beneficios .section-tag { color: var(--accent); }
+    #beneficios .section-title { color: #fff; }
+    #beneficios .section-sub { color: rgba(255,255,255,.6); }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+    }
+
+    .benefit-card {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: var(--radius);
+      padding: 30px;
+      transition: background .3s, transform .3s;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .benefit-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity .5s ease, transform .5s ease, background .3s;
+    }
+    .benefit-card:hover { background: rgba(255,255,255,.1); transform: translateY(-3px); }
+    .benefit-icon {
+      font-size: 1.6rem;
+      margin-bottom: 16px;
+    }
+    .benefit-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .benefit-card p { font-size: .87rem; color: rgba(255,255,255,.55); line-height: 1.65; }
+
+    /* CONTACT */
+    #contato { background: var(--bg); }
+
+    .contact-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+
+    .contact-form {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 40px;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 30px rgba(0,0,0,.05);
+    }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block;
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      color: var(--ink);
+      background: var(--bg);
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+      resize: none;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(25,118,210,.12);
+    }
+    .form-group textarea { height: 110px; }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+    .btn-submit:hover { background: var(--green-light); transform: translateY(-1px); }
+
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .contact-info h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+    .contact-info p { font-size: .95rem; color: var(--ink-muted); margin-bottom: 32px; }
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .info-icon {
+      width: 40px; height: 40px;
+      background: var(--green-pale);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .info-item strong { display: block; font-size: .85rem; font-weight: 600; margin-bottom: 3px; }
+    .info-item span { font-size: .85rem; color: var(--ink-muted); }
+
+    /* FOOTER */
+    footer {
+      background: var(--ink);
+      color: rgba(255,255,255,.5);
+      text-align: center;
+      padding: 28px 6%;
+      font-size: .83rem;
+    }
+    footer strong { color: rgba(255,255,255,.8); }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .6; transform: scale(1.2); }
+    }
+    @keyframes fillAnim {
+      to { width: 87%; }
+    }
+    @keyframes floatY {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .hero-visual .sensor-card { animation: floatY 4s ease-in-out infinite 1.5s; }
+
+    /* TEAM */
+    .team-section { background: var(--blue); }
+    .team-section .section-tag { color: var(--accent); }
+    .team-section .section-title { color: #fff; margin-bottom: 50px; }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 36px 24px;
+      justify-items: center;
+    }
+
+    .team-member {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .team-member img {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.08);
+    }
+
+    .team-member span {
+      color: #fff;
+      font-size: .88rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* SHOWCASE */
+    .showcase { padding: 60px 0 20px; background: var(--bg); }
+    .showcase-img {
+      width: 100%;
+      max-width: 960px;
+      display: block;
+      margin: 0 auto;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.12);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .showcase { padding: 40px 0; }
+      .hero-grid { grid-template-columns: 1fr; text-align: center; }
+      .hero-desc { margin: 20px auto 0; }
+      .hero-actions { justify-content: center; flex-wrap: wrap; }
+      .hero-visual { margin-top: 40px; }
+      .contact-wrap { grid-template-columns: 1fr; }
+      .showcase-img { border-radius: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">Sense<span>Tech</span></div>
+  <ul class="nav-links">
+    <li><a href="#como-funciona">Como funciona</a></li>
+    <li><a href="#beneficios">Benefícios</a></li>
+    <li><a href="#equipe">Equipe</a></li>
+    <li><a href="#contato">Contato</a></li>
+  </ul>
+  <a href="#contato" class="nav-cta">Fale conosco</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="hero-bg"></div>
+  <div class="hero-grid">
+    <div class="hero-content">
+      <div class="hero-tag">AIoT · Gestão Inteligente</div>
+      <h1>Lixeiras que <em>falam</em> quando precisam de atenção</h1>
+      <p class="hero-desc">
+        O <strong>SenseBin</strong> monitora o nível de preenchimento das lixeiras em tempo real e notifica a equipe de limpeza automaticamente, sem desperdício de tempo, sem lixeiras transbordando.
+      </p>
+      <div class="hero-actions">
+        <a href="#como-funciona" class="btn-primary">Ver como funciona</a>
+        <a href="#contato" class="btn-ghost">
+          Entrar em contato
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="sensor-card">
+        <div class="sensor-dot"></div>
+        <div class="sensor-card-label">SenseBin – Monitor ativo</div>
+        <div class="bin-wrapper">
+          <!-- Bin SVG -->
+          <svg class="bin-svg" viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Lid -->
+            <rect x="20" y="14" width="80" height="12" rx="5" fill="#1a3a5c"/>
+            <rect x="46" y="6" width="28" height="10" rx="4" fill="#2f6fa8"/>
+            <!-- Body outline -->
+            <path d="M28 26 L22 134 H98 L92 26 Z" fill="#e8f5ee" stroke="#dce8e0" stroke-width="1.5"/>
+            <!-- Fill level (animated) -->
+            <clipPath id="binClip">
+              <path d="M28 26 L22 134 H98 L92 26 Z"/>
+            </clipPath>
+            <rect id="fillRect" x="22" y="90" width="76" height="44" fill="#1E88E5" clip-path="url(#binClip)" opacity=".7">
+              <animate attributeName="y" from="134" to="57" dur="3s" begin="1.2s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1"/>
+            </rect>
+            <!-- Recycle symbol -->
+            <text x="60" y="100" text-anchor="middle" font-size="22" fill="rgba(255,255,255,.8)">♻</text>
+            <!-- Sensor chip on top -->
+            <rect x="50" y="30" width="20" height="14" rx="3" fill="#1976D2"/>
+            <circle cx="60" cy="37" r="4" fill="#fff" opacity=".9"/>
+            <!-- Signal waves -->
+            <path d="M65 33 Q70 37 65 41" stroke="#fff" stroke-width="1.5" fill="none" opacity=".7" stroke-linecap="round">
+              <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" repeatCount="indefinite"/>
+            </path>
+            <path d="M68 30 Q76 37 68 44" stroke="#fff" stroke-width="1.5" fill="none" opacity=".5" stroke-linecap="round">
+              <animate attributeName="opacity" values="0.1;0.7;0.1" dur="1.8s" begin=".3s" repeatCount="indefinite"/>
+            </path>
+          </svg>
+        </div>
+        <div class="fill-bar-wrap">
+          <div class="fill-bar"></div>
+        </div>
+        <div class="fill-text">
+          <span>Nível de preenchimento</span>
+          <span class="fill-percent" id="fillPct">0%</span>
+        </div>
+        <div class="alert-badge">
+          <div class="alert-dot"></div>
+          Lixeira quase cheia, notificação enviada!
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCT SHOWCASE -->
+<section class="showcase">
+  <div class="section-inner">
+    <img src="SenseBin.png" alt="SenseBin – produto inteligente para monitoramento de lixeiras" class="showcase-img"/>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="como-funciona">
+  <div class="section-inner">
+    <div class="section-tag">Como funciona</div>
+    <h2 class="section-title">Simples, inteligente e automático</h2>
+    <p class="section-sub">Em apenas três etapas, o SenseBin transforma a gestão de resíduos do seu ambiente.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-icon">📡</div>
+        <h3>Sensor instalado</h3>
+        <p>O SenseBin é fixado na parte interna da tampa da lixeira. Ele mede a distância entre o sensor e o lixo em tempo real usando ultrassom.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-icon">☁️</div>
+        <h3>Dados na nuvem</h3>
+        <p>As leituras são enviadas via Wi-Fi para nossa plataforma em nuvem, que processa e acompanha o histórico de cada lixeira cadastrada.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-icon">🔔</div>
+        <h3>Alerta automático</h3>
+        <p>Quando a lixeira atinge o nível definido, a equipe de limpeza recebe um aviso instantâneo no celular para realizar a troca.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-icon">📊</div>
+        <h3>Relatórios e controle</h3>
+        <p>O gestor acessa um painel com dados de frequência de uso, horários de pico e desempenho da equipe em tempo real.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section id="beneficios">
+  <div class="section-inner">
+    <div class="section-tag">Benefícios</div>
+    <h2 class="section-title">Por que escolher o SenseBin?</h2>
+    <p class="section-sub">Mais eficiência, menos desperdício, para a equipe de limpeza e para o meio ambiente.</p>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon">⚡</div>
+        <h3>Resposta rápida</h3>
+        <p>A equipe de limpeza é avisada no momento certo, evitando lixeiras transbordando e mantendo o ambiente sempre limpo.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🌿</div>
+        <h3>Sustentabilidade</h3>
+        <p>Rotas de coleta otimizadas reduzem deslocamentos desnecessários, diminuindo consumo de energia e emissões de carbono.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">💸</div>
+        <h3>Redução de custos</h3>
+        <p>Menos trocas desnecessárias de saco de lixo e melhor aproveitamento do tempo da equipe geram economia real para o negócio.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">📱</div>
+        <h3>Fácil de usar</h3>
+        <p>Interface simples no celular: a equipe recebe o alerta, confirma a troca e o sistema atualiza automaticamente.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🔧</div>
+        <h3>Instalação rápida</h3>
+        <p>O sensor é instalado em minutos, sem necessidade de obras ou cabeamento. Funciona com bateria de longa duração.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">📈</div>
+        <h3>Dados em tempo real</h3>
+        <p>Painel de controle com histórico de uso, alertas e performance da equipe, tudo acessível de qualquer lugar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contato">
+  <div class="section-inner">
+    <div class="section-tag">Contato</div>
+    <h2 class="section-title">Vamos conversar?</h2>
+    <p class="section-sub">Quer saber mais sobre o SenseBin ou levar essa solução para o seu negócio? Fale com a gente.</p>
+    <div class="contact-wrap">
+      <div class="contact-form">
+        <div class="form-group">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" placeholder="Seu nome"/>
+        </div>
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" placeholder="seu@email.com"/>
+        </div>
+        <div class="form-group">
+          <label for="empresa">Empresa / Organização</label>
+          <input type="text" id="empresa" placeholder="Nome da empresa (opcional)"/>
+        </div>
+        <div class="form-group">
+          <label for="msg">Mensagem</label>
+          <textarea id="msg" placeholder="Como podemos ajudar?"></textarea>
+        </div>
+        <button class="btn-submit" onclick="submitForm()">Enviar mensagem</button>
+        <div class="form-success" id="formSuccess">✅ Mensagem enviada! Entraremos em contato em breve.</div>
+      </div>
+
+      <div class="contact-info">
+        <h3>SenseTech – Tecnologia para um futuro mais limpo</h3>
+        <p>Somos uma startup focada em soluções AIoT para gestão inteligente de ambientes. O SenseBin é o nosso produto carro-chefe.</p>
+        <div class="info-item">
+          <div class="info-icon">📧</div>
+          <div>
+            <strong>E-mail</strong>
+            <span>contato@sensetech.com.br</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">📱</div>
+          <div>
+            <strong>WhatsApp</strong>
+            <span>(11) 99999-0000</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">📍</div>
+          <div>
+            <strong>Localização</strong>
+            <span>São Paulo, SP – Brasil</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EQUIPE -->
+<section id="equipe" class="team-section">
+  <div class="section-inner">
+    <div class="section-tag">Nossa equipe</div>
+    <h2 class="section-title">Desenvolvedores da SenseTech</h2>
+    <div class="team-grid">
+      <div class="team-member">
+        <img src="Gabriel Rodrigues de Oliveira .jpeg" alt="Gabriel Rodrigues de Oliveira"/>
+        <span>Gabriel Rodrigues de Oliveira</span>
+      </div>
+      <div class="team-member">
+        <img src="Naylson dos Santos Alves Teixeira.jpeg" alt="Naylson dos Santos Alves Teixeira"/>
+        <span>Naylson dos Santos Alves Teixeira</span>
+      </div>
+      <div class="team-member">
+        <img src="Arthur Moisés Cardoso Amaral.jpeg" alt="Arthur Moisés Cardoso Amaral"/>
+        <span>Arthur Moisés Cardoso Amaral</span>
+      </div>
+      <div class="team-member">
+        <img src="foto4.jpg" alt="Integrante 4"/>
+        <span>Nome 4</span>
+      </div>
+      <div class="team-member">
+        <img src="foto5.jpg" alt="Integrante 5"/>
+        <span>Nome 5</span>
+      </div>
+      <div class="team-member">
+        <img src="foto6.jpg" alt="Integrante 6"/>
+        <span>Nome 6</span>
+      </div>
+      <div class="team-member">
+        <img src="foto7.jpg" alt="Integrante 7"/>
+        <span>Nome 7</span>
+      </div>
+      <div class="team-member">
+        <img src="foto8.jpg" alt="Integrante 8"/>
+        <span>Nome 8</span>
+      </div>
+      <div class="team-member">
+        <img src="foto9.jpg" alt="Integrante 9"/>
+        <span>Nome 9</span>
+      </div>
+      <div class="team-member">
+        <img src="foto10.jpg" alt="Integrante 10"/>
+        <span>Nome 10</span>
+      </div>
+      <div class="team-member">
+        <img src="foto11.jpg" alt="Integrante 11"/>
+        <span>Nome 11</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 <strong>SenseTech</strong> · SenseBin · Todos os direitos reservados.</p>
+</footer>
+
+<script>
+  // Navbar scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 30);
+  });
+
+  // Fill percent counter animation
+  const fillPct = document.getElementById('fillPct');
+  let count = 0;
+  const target = 87;
+  const delay = 1200;
+  const duration = 3000;
+  const stepTime = duration / target;
+  setTimeout(() => {
+    const timer = setInterval(() => {
+      count++;
+      fillPct.textContent = count + '%';
+      if (count >= target) clearInterval(timer);
+    }, stepTime);
+  }, delay);
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.step, .benefit-card');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 80 * [...revealEls].indexOf(entry.target) % 4 * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // Form submit
+  function submitForm() {
+    const nome = document.getElementById('nome').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const msg = document.getElementById('msg').value.trim();
+    if (!nome || !email || !msg) {
+      alert('Por favor, preencha nome, e-mail e mensagem.');
+      return;
+    }
+    document.querySelector('.btn-submit').style.display = 'none';
+    document.querySelectorAll('.form-group').forEach(g => g.style.display = 'none');
+    const success = document.getElementById('formSuccess');
+    success.style.display = 'block';
+  }
+</script>
+</body>
+</html>
